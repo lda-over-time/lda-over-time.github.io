@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lda_over_time.models.dtm_model_interface &mdash; lda-over-time  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> lda-over-time
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">lda_over_time</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lda-over-time</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>lda_over_time.models.dtm_model_interface</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for lda_over_time.models.dtm_model_interface</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">DtmModelInterface is an interface to create new DTM modules, these modules</span>
+<span class="sd">should train the model and return values to front end.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DtmModelInterface"><a class="viewcode-back" href="../../../lda_over_time.models.html#lda_over_time.models.dtm_model_interface.DtmModelInterface">[docs]</a><span class="k">class</span> <span class="nc">DtmModelInterface</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    DtmModelInterface defines methods and attributes that a module should have \</span>
+<span class="sd">    in order to be passed to front end.</span>
+
+<span class="sd">    :param corpus: Each item from the list is one document from corpus.</span>
+<span class="sd">    :type corpus: list[str]</span>
+
+<span class="sd">    :param dates: List of timestamps for each document in corpus, each \</span>
+<span class="sd">    date&#39;s position should match with its respective text.</span>
+<span class="sd">    :type dates: list[str]</span>
+
+<span class="sd">    :param date_format: The date format used in `dates`.</span>
+<span class="sd">    :type date_format: str</span>
+
+<span class="sd">    :param freq: The frequency used to group texts.</span>
+<span class="sd">    :type freq: str</span>
+
+<span class="sd">    :param n_topics: Number of topics that the DTM model should find. The \</span>
+<span class="sd">    default value is 100.</span>
+<span class="sd">    :type n_topics: int, optional</span>
+
+<span class="sd">    :param sep: Separator used to split each word, the default value is any \</span>
+<span class="sd">    blank space.</span>
+<span class="sd">    :type sep: str, optional</span>
+
+<span class="sd">    :param workers: Number of workers (cpus) to use. If not provided, it \</span>
+<span class="sd">    will use the value of multiprocessing.cpu_count()</span>
+<span class="sd">    :type workers: int, optional</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_timeslices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This attribute should return the number of timeslices found.</span>
+
+<span class="sd">        :return: It should return the number of time slices found in corpus.</span>
+<span class="sd">        :rtype: int</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="DtmModelInterface.get_results"><a class="viewcode-back" href="../../../lda_over_time.models.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.get_results">[docs]</a>    <span class="k">def</span> <span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method should return a table representing the evolution of each \</span>
+<span class="sd">        topic over time.</span>
+
+<span class="sd">        :return: It must return a Pandas&#39; dataframe where rows represents \</span>
+<span class="sd">        different time slices and they are sorted by date, it must have one \</span>
+<span class="sd">        column `data` and the remaining columns numbered from 0 to k (number \</span>
+<span class="sd">        of topics - 1) that holds weights of each topic in that period.</span>
+<span class="sd">        :rtype: pandas.core.frame.DataFrame</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="DtmModelInterface.get_topic_words"><a class="viewcode-back" href="../../../lda_over_time.models.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.get_topic_words">[docs]</a>    <span class="k">def</span> <span class="nf">get_topic_words</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topic_id</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method should return the top n words that better describes the \</span>
+<span class="sd">        topic in a specific time slice.</span>
+
+<span class="sd">        :param topic_id: The id of the desired topic.</span>
+<span class="sd">        :type topic_id: int</span>
+
+<span class="sd">        :param i: The position of the desired timeslice in chronological \</span>
+<span class="sd">        order the first (oldest) time slice is indexed by 1.</span>
+<span class="sd">        :type i: int</span>
+
+<span class="sd">        :param n: This specifies how many words that better describes the \</span>
+<span class="sd">        topic at a specific time slice should be returned.</span>
+<span class="sd">        :type n: int</span>
+
+<span class="sd">        :return: It returns a list of top n words that best describes the \</span>
+<span class="sd">        requested topic in a specific time.</span>
+<span class="sd">        :rtype: list[str]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="DtmModelInterface.prepare_args"><a class="viewcode-back" href="../../../lda_over_time.models.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.prepare_args">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method should return a dictionary with all necessary values to \</span>
+<span class="sd">        call PyLdaVis.prepare method.</span>
+
+<span class="sd">        :param i: The position of the desired timeslice in chronological \</span>
+<span class="sd">        order, the first (oldest) time slice is indexed by 1.</span>
+<span class="sd">        :type i: int</span>
+
+<span class="sd">        :return: It returns a dictionary ready to be passed to PyLdaVis</span>
+<span class="sd">        :rtype: dict[str, any]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="DtmModelInterface.train"><a class="viewcode-back" href="../../../lda_over_time.models.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method should train the dtm model.</span>
+
+<span class="sd">        :return: nothing</span>
+<span class="sd">        :rtype: None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Willian Takayuki Ozako.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

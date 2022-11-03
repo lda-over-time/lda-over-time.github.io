@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lda_over_time.lda_over_time &mdash; lda-over-time  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> lda-over-time
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">lda_over_time</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lda-over-time</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>lda_over_time.lda_over_time</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for lda_over_time.lda_over_time</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">LdaOverTime is a framework that brings an easier way of doing Topic Modeling \</span>
+<span class="sd">Analysis Over Time and get visualization of results.</span>
+
+<span class="sd">In brief, Topic Modeling is a technique that finds topics that each document \</span>
+<span class="sd">from a collection covers. And, by addind the time in this equation, we can \</span>
+<span class="sd">study how much and why one certain topic is more or less discussed in a \</span>
+<span class="sd">time slice.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># IMPORTS</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">pyLDAvis</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+
+
+<span class="c1"># TYPING</span>
+<span class="kn">from</span> <span class="nn">lda_over_time.models.dtm_model_interface</span> <span class="kn">import</span> <span class="n">DtmModelInterface</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+
+
+<span class="c1"># CODE</span>
+<div class="viewcode-block" id="LdaOverTime"><a class="viewcode-back" href="../../lda_over_time.html#lda_over_time.lda_over_time.LdaOverTime">[docs]</a><span class="k">class</span> <span class="nc">LdaOverTime</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    LdaOverTime provides an easier way of taking a pre-processed set of \</span>
+<span class="sd">    documents, choose a DTM model and get an analysis of the topic&#39;s evolution \</span>
+<span class="sd">    over time.</span>
+
+<span class="sd">    Choose a model to work with, create an instance of it by passing the \</span>
+<span class="sd">    right parameters and then you can instantiate LdaOverTime by passing the \</span>
+<span class="sd">    previous object.</span>
+
+<span class="sd">    :param model: instance of the chosen model.</span>
+<span class="sd">    :type model: DtmModelInterface</span>
+
+<span class="sd">    :return: Nothing</span>
+<span class="sd">    :rtype: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">DtmModelInterface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize values and train model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Save parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corpus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">corpus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">dates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dafe_format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">date_format</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">freq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">freq</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_topics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">n_topics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">sep</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">workers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">workers</span>
+
+        <span class="c1"># Train model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+
+        <span class="c1"># Get number of time slices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_timeslices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">n_timeslices</span>
+
+        <span class="c1"># Get results from model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dates</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_results</span><span class="p">()</span>
+
+        <span class="c1"># It holds the default name of each topic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topics_names</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Create default topic&#39;s name: top 10 words of last time slice</span>
+        <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_topics</span><span class="p">):</span>
+            <span class="n">words</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_topic_words</span><span class="p">(</span>
+                        <span class="n">topic</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">n_timeslices</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                        <span class="mi">10</span>
+                    <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topics_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">words</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># extract results that will be used to plot model</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_results</span><span class="p">()</span>
+
+        <span class="c1"># get weights of each topic over time</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_topics</span><span class="p">))]</span>
+
+        <span class="c1"># get dates</span>
+        <span class="n">dates</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="c1"># return dates and weights</span>
+        <span class="k">return</span> <span class="n">results</span><span class="p">,</span> <span class="n">dates</span><span class="p">,</span> <span class="n">weights</span>
+
+
+<div class="viewcode-block" id="LdaOverTime.plot"><a class="viewcode-back" href="../../lda_over_time.html#lda_over_time.lda_over_time.LdaOverTime.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+             <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+             <span class="n">legend_title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+             <span class="n">topic_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+             <span class="n">path_to_save</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+             <span class="n">display</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot the evolution of topics over time.</span>
+
+<span class="sd">        :param title: title of plot</span>
+<span class="sd">        :type title: str</span>
+
+<span class="sd">        :param legend_title: legend&#39;s title</span>
+<span class="sd">        :type legend_title: str, optional</span>
+
+<span class="sd">        :param topic_names: custom names for each topic. If not provided, it \</span>
+<span class="sd">        will be the top 10 words for each topic.</span>
+<span class="sd">        :type topic_names: list[str], optional</span>
+
+<span class="sd">        :param path_to_save: set it with path to save the graph. Default \</span>
+<span class="sd">        behaviour does not save the graph.</span>
+<span class="sd">        :type path_to_save: str, optional</span>
+
+<span class="sd">        :param display: set it to False to not display graph. Default \</span>
+<span class="sd">        behaviour is to display.</span>
+<span class="sd">        :type display: bool, optional</span>
+
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Custom topic names were not provided: set default value (top 10 words)</span>
+        <span class="k">if</span> <span class="n">topic_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">topic_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topics_names</span>
+
+        <span class="c1"># TODO: find a way of setting label names without breaking markers</span>
+        <span class="c1"># Topic names has the right length: set new column names</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">topic_names</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">topic_names</span>
+
+        <span class="c1"># Plot</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dates</span><span class="p">)))</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dates</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">legend_title</span><span class="p">,</span>
+                   <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+                   <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Path was given: save plot in path</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_to_save</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path_to_save</span><span class="p">)</span>
+
+        <span class="c1"># Set to display: display plot</span>
+        <span class="k">if</span> <span class="n">display</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="LdaOverTime.save"><a class="viewcode-back" href="../../lda_over_time.html#lda_over_time.lda_over_time.LdaOverTime.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save your current work in the location file_path. You can reload your \</span>
+<span class="sd">        work later by calling load with the same file_path.</span>
+
+<span class="sd">        :param file_path: Location to save your current work.</span>
+<span class="sd">        :type file_path: str</span>
+
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LdaOverTime.load"><a class="viewcode-back" href="../../lda_over_time.html#lda_over_time.lda_over_time.LdaOverTime.load">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;LdaOverTime&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load your last work.</span>
+
+<span class="sd">        :param file_path: Location where you saved your last work.</span>
+<span class="sd">        :type file_path: str</span>
+
+<span class="sd">        :return: Last saved work.</span>
+<span class="sd">        :rtype: LdaOverTime</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LdaOverTime.showvis"><a class="viewcode-back" href="../../lda_over_time.html#lda_over_time.lda_over_time.LdaOverTime.showvis">[docs]</a>    <span class="k">def</span> <span class="nf">showvis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show the PyLdaVis analysis of your model in a specific time slice. \</span>
+<span class="sd">        It is useful to evaluate how good your model is.</span>
+
+<span class="sd">        *This method is only available inside jupyter notebooks.*</span>
+
+<span class="sd">        :param time_id: Position of the time slice from 1 to n_timeslices in \</span>
+<span class="sd">        chronological order</span>
+<span class="sd">        :type time_id: int</span>
+
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">prepare_args</span><span class="p">(</span><span class="n">time_id</span><span class="p">)</span>
+
+        <span class="n">display</span> <span class="o">=</span> <span class="n">pyLDAvis</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pyLDAvis</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">display</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LdaOverTime.get_topic_words"><a class="viewcode-back" href="../../lda_over_time.html#lda_over_time.lda_over_time.LdaOverTime.get_topic_words">[docs]</a>    <span class="k">def</span> <span class="nf">get_topic_words</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">topic_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">timeslice</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the top `n` words of from a specific topic in the chosen \</span>
+<span class="sd">        timeslice.</span>
+
+<span class="sd">        :param topic_id: The id of the desired topic.</span>
+<span class="sd">        :type topic_id: int</span>
+
+<span class="sd">        :param timeslice: The position of the desired timeslice in \</span>
+<span class="sd">        chronological order the first (oldest) time slice is indexed by 1.</span>
+<span class="sd">        :type timeslice: int</span>
+
+<span class="sd">        :param n: This specifies how many words that better describes the \</span>
+<span class="sd">        topic at a specific time slice should be returned.</span>
+<span class="sd">        :type n: int</span>
+
+<span class="sd">        :return: It returns a list of top n words that best describes the \</span>
+<span class="sd">        requested topic in a specific time.</span>
+<span class="sd">        :rtype: list[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_topic_words</span><span class="p">(</span><span class="n">topic_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">timeslice</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LdaOverTime.get_results"><a class="viewcode-back" href="../../lda_over_time.html#lda_over_time.lda_over_time.LdaOverTime.get_results">[docs]</a>    <span class="k">def</span> <span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the model&#39;s result in format of a table.</span>
+
+<span class="sd">        In this table, rows represents each time slice.</span>
+
+<span class="sd">        For the columns, the `date` column holds the time slices&#39; timestamps \</span>
+<span class="sd">        and the remaing `n_topics` columns indexed from 1 to `n_topics` \</span>
+<span class="sd">        holds the proportion of each topic of each time slice.</span>
+
+<span class="sd">        You can get each topic&#39;s main words by calling `get_topic_words`, \</span>
+<span class="sd">        e.g. if you want the top 10 words from the topic 3 of this table in \</span>
+<span class="sd">        the first row, call `get_topic_words(topic_id=3, timeslice=1, n=10)`</span>
+
+<span class="sd">        :return: table with results</span>
+<span class="sd">        :rtype: pandas.DataFrame</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get results</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_results</span><span class="p">()</span>
+
+        <span class="c1"># Change columns to number topics from 1 to n_topics</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_topics</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Return table</span>
+        <span class="k">return</span> <span class="n">results</span></div></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Willian Takayuki Ozako.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
