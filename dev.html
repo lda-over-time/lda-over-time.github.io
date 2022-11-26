@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Developer’s Guide &mdash; lda-over-time  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Models" href="lda_over_time.models.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> lda-over-time
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="modules.html">LdaOverTime</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer’s Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-lda_over_time.models.dtm_model_interface">lda_over_time.models.dtm_model_interface</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">lda-over-time</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Developer’s Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/dev.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="developer-s-guide">
+<h1>Developer’s Guide<a class="headerlink" href="#developer-s-guide" title="Permalink to this heading"></a></h1>
+<p>To create new models for LdaOverTime library, you have to implement a new class that inherites and implements all DtmModelInterface’s method. Also, your model must have the following properties that have yet to be documented on the interface:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>corpus</p></li>
+<li><p>dates</p></li>
+<li><p>dafe_format</p></li>
+<li><p>freq</p></li>
+<li><p>n_topics</p></li>
+<li><p>sep</p></li>
+<li><p>workers</p></li>
+</ul>
+</div></blockquote>
+<p>To build and to publish, we use the <cite>hatch &lt;https://hatch.pypa.io/latest/&gt;</cite> package manager. Right bellow, we are listing some commands that are useful, feel free to add more examples:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>build: <cite>hatch build</cite></p></li>
+<li><p>publish (build before): <cite>hatch publish -r “https://upload.pypi.org/legacy/” -u “&lt;username&gt;” -a “&lt;password&gt;”</cite></p></li>
+</ul>
+</div></blockquote>
+<section id="module-lda_over_time.models.dtm_model_interface">
+<span id="lda-over-time-models-dtm-model-interface"></span><h2>lda_over_time.models.dtm_model_interface<a class="headerlink" href="#module-lda_over_time.models.dtm_model_interface" title="Permalink to this heading"></a></h2>
+<p>DtmModelInterface is an interface to create new DTM modules, these modules
+should train the model and return values to front end.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="lda_over_time.models.dtm_model_interface.DtmModelInterface">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lda_over_time.models.dtm_model_interface.</span></span><span class="sig-name descname"><span class="pre">DtmModelInterface</span></span><a class="reference internal" href="_modules/lda_over_time/models/dtm_model_interface.html#DtmModelInterface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.dtm_model_interface.DtmModelInterface" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>DtmModelInterface defines methods and attributes that a module should have     in order to be passed to front end.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>corpus</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – Each item from the list is one document from corpus.</p></li>
+<li><p><strong>dates</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of timestamps for each document in corpus, each     date’s position should match with its respective text.</p></li>
+<li><p><strong>date_format</strong> (<em>str</em>) – The date format used in <cite>dates</cite>.</p></li>
+<li><p><strong>freq</strong> (<em>str</em>) – The frequency used to group texts.</p></li>
+<li><p><strong>n_topics</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of topics that the DTM model should find. The     default value is 100.</p></li>
+<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>optional</em>) – Separator used to split each word, the default value is any     blank space.</p></li>
+<li><p><strong>workers</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of workers (cpus) to use. If not provided, it     will use the value of multiprocessing.cpu_count()</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="lda_over_time.models.dtm_model_interface.DtmModelInterface.get_results">
+<span class="sig-name descname"><span class="pre">get_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/dtm_model_interface.html#DtmModelInterface.get_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.dtm_model_interface.DtmModelInterface.get_results" title="Permalink to this definition"></a></dt>
+<dd><p>This method should return a table representing the evolution of each         topic over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>It must return a Pandas’ dataframe where rows represents         different time slices and they are sorted by date, it must have one         column <cite>data</cite> and the remaining columns numbered from 0 to k (number         of topics - 1) that holds weights of each topic in that period.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>pandas.core.frame.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lda_over_time.models.dtm_model_interface.DtmModelInterface.get_topic_words">
+<span class="sig-name descname"><span class="pre">get_topic_words</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topic_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/dtm_model_interface.html#DtmModelInterface.get_topic_words"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.dtm_model_interface.DtmModelInterface.get_topic_words" title="Permalink to this definition"></a></dt>
+<dd><p>This method should return the top n words that better describes the         topic in a specific time slice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>topic_id</strong> (<em>int</em>) – The id of the desired topic.</p></li>
+<li><p><strong>i</strong> (<em>int</em>) – The position of the desired timeslice in chronological         order the first (oldest) time slice is indexed by 1.</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – This specifies how many words that better describes the         topic at a specific time slice should be returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>It returns a list of top n words that best describes the         requested topic in a specific time.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="lda_over_time.models.dtm_model_interface.DtmModelInterface.n_timeslices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_timeslices</span></span><a class="headerlink" href="#lda_over_time.models.dtm_model_interface.DtmModelInterface.n_timeslices" title="Permalink to this definition"></a></dt>
+<dd><p>This attribute should return the number of timeslices found.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>It should return the number of time slices found in corpus.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lda_over_time.models.dtm_model_interface.DtmModelInterface.prepare_args">
+<span class="sig-name descname"><span class="pre">prepare_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/dtm_model_interface.html#DtmModelInterface.prepare_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.dtm_model_interface.DtmModelInterface.prepare_args" title="Permalink to this definition"></a></dt>
+<dd><p>This method should return a dictionary with all necessary values to         call PyLdaVis.prepare method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>i</strong> (<em>int</em>) – The position of the desired timeslice in chronological         order, the first (oldest) time slice is indexed by 1.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>It returns a dictionary ready to be passed to PyLdaVis</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict[str, any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lda_over_time.models.dtm_model_interface.DtmModelInterface.train">
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/dtm_model_interface.html#DtmModelInterface.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.dtm_model_interface.DtmModelInterface.train" title="Permalink to this definition"></a></dt>
+<dd><p>This method should train the dtm model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>nothing</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lda_over_time.models.html" class="btn btn-neutral float-left" title="Models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Willian Takayuki Ozako.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

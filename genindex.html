@@ -37,7 +37,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">lda_over_time</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">LdaOverTime</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev.html">Developer’s Guide</a></li>
 </ul>
 
         </div>
@@ -73,6 +74,7 @@
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  
@@ -80,7 +82,7 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="lda_over_time.models.html#lda_over_time.models.dtm_model_interface.DtmModelInterface">DtmModelInterface (class in lda_over_time.models.dtm_model_interface)</a>
+      <li><a href="dev.html#lda_over_time.models.dtm_model_interface.DtmModelInterface">DtmModelInterface (class in lda_over_time.models.dtm_model_interface)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -91,11 +93,11 @@
       <li><a href="lda_over_time.html#lda_over_time.lda_over_time.LdaOverTime.get_results">get_results() (lda_over_time.lda_over_time.LdaOverTime method)</a>
 
       <ul>
-        <li><a href="lda_over_time.models.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.get_results">(lda_over_time.models.dtm_model_interface.DtmModelInterface method)</a>
+        <li><a href="dev.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.get_results">(lda_over_time.models.dtm_model_interface.DtmModelInterface method)</a>
 </li>
         <li><a href="lda_over_time.models.html#lda_over_time.models.lda_seq_model.LdaSeqModel.get_results">(lda_over_time.models.lda_seq_model.LdaSeqModel method)</a>
 </li>
-        <li><a href="lda_over_time.models.html#lda_over_time.models.prevalence_model.PrevalenceModel.get_results">(lda_over_time.models.prevalence_model.PrevalenceModel method)</a>
+        <li><a href="lda_over_time.models.html#lda_over_time.models.temporal_lda_model.TemporalLdaModel.get_results">(lda_over_time.models.temporal_lda_model.TemporalLdaModel method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -103,11 +105,11 @@
       <li><a href="lda_over_time.html#lda_over_time.lda_over_time.LdaOverTime.get_topic_words">get_topic_words() (lda_over_time.lda_over_time.LdaOverTime method)</a>
 
       <ul>
-        <li><a href="lda_over_time.models.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.get_topic_words">(lda_over_time.models.dtm_model_interface.DtmModelInterface method)</a>
+        <li><a href="dev.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.get_topic_words">(lda_over_time.models.dtm_model_interface.DtmModelInterface method)</a>
 </li>
         <li><a href="lda_over_time.models.html#lda_over_time.models.lda_seq_model.LdaSeqModel.get_topic_words">(lda_over_time.models.lda_seq_model.LdaSeqModel method)</a>
 </li>
-        <li><a href="lda_over_time.models.html#lda_over_time.models.prevalence_model.PrevalenceModel.get_topic_words">(lda_over_time.models.prevalence_model.PrevalenceModel method)</a>
+        <li><a href="lda_over_time.models.html#lda_over_time.models.temporal_lda_model.TemporalLdaModel.get_topic_words">(lda_over_time.models.temporal_lda_model.TemporalLdaModel method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -117,13 +119,6 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    lda_over_time
-
-      <ul>
-        <li><a href="lda_over_time.html#module-lda_over_time">module</a>
-</li>
-      </ul></li>
-      <li>
     lda_over_time.lda_over_time
 
       <ul>
@@ -131,21 +126,12 @@
 </li>
       </ul></li>
       <li>
-    lda_over_time.models
-
-      <ul>
-        <li><a href="lda_over_time.models.html#module-lda_over_time.models">module</a>
-</li>
-      </ul></li>
-      <li>
     lda_over_time.models.dtm_model_interface
 
       <ul>
-        <li><a href="lda_over_time.models.html#module-lda_over_time.models.dtm_model_interface">module</a>
+        <li><a href="dev.html#module-lda_over_time.models.dtm_model_interface">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     lda_over_time.models.lda_seq_model
 
@@ -153,11 +139,13 @@
         <li><a href="lda_over_time.models.html#module-lda_over_time.models.lda_seq_model">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    lda_over_time.models.prevalence_model
+    lda_over_time.models.temporal_lda_model
 
       <ul>
-        <li><a href="lda_over_time.models.html#module-lda_over_time.models.prevalence_model">module</a>
+        <li><a href="lda_over_time.models.html#module-lda_over_time.models.temporal_lda_model">module</a>
 </li>
       </ul></li>
       <li><a href="lda_over_time.html#lda_over_time.lda_over_time.LdaOverTime">LdaOverTime (class in lda_over_time.lda_over_time)</a>
@@ -176,17 +164,13 @@
     module
 
       <ul>
-        <li><a href="lda_over_time.html#module-lda_over_time">lda_over_time</a>
-</li>
         <li><a href="lda_over_time.html#module-lda_over_time.lda_over_time">lda_over_time.lda_over_time</a>
 </li>
-        <li><a href="lda_over_time.models.html#module-lda_over_time.models">lda_over_time.models</a>
-</li>
-        <li><a href="lda_over_time.models.html#module-lda_over_time.models.dtm_model_interface">lda_over_time.models.dtm_model_interface</a>
+        <li><a href="dev.html#module-lda_over_time.models.dtm_model_interface">lda_over_time.models.dtm_model_interface</a>
 </li>
         <li><a href="lda_over_time.models.html#module-lda_over_time.models.lda_seq_model">lda_over_time.models.lda_seq_model</a>
 </li>
-        <li><a href="lda_over_time.models.html#module-lda_over_time.models.prevalence_model">lda_over_time.models.prevalence_model</a>
+        <li><a href="lda_over_time.models.html#module-lda_over_time.models.temporal_lda_model">lda_over_time.models.temporal_lda_model</a>
 </li>
       </ul></li>
   </ul></td>
@@ -195,12 +179,12 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="lda_over_time.models.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.n_timeslices">n_timeslices (lda_over_time.models.dtm_model_interface.DtmModelInterface property)</a>
+      <li><a href="dev.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.n_timeslices">n_timeslices (lda_over_time.models.dtm_model_interface.DtmModelInterface property)</a>
 
       <ul>
         <li><a href="lda_over_time.models.html#lda_over_time.models.lda_seq_model.LdaSeqModel.n_timeslices">(lda_over_time.models.lda_seq_model.LdaSeqModel property)</a>
 </li>
-        <li><a href="lda_over_time.models.html#lda_over_time.models.prevalence_model.PrevalenceModel.n_timeslices">(lda_over_time.models.prevalence_model.PrevalenceModel property)</a>
+        <li><a href="lda_over_time.models.html#lda_over_time.models.temporal_lda_model.TemporalLdaModel.n_timeslices">(lda_over_time.models.temporal_lda_model.TemporalLdaModel property)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -211,17 +195,21 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="lda_over_time.html#lda_over_time.lda_over_time.LdaOverTime.plot">plot() (lda_over_time.lda_over_time.LdaOverTime method)</a>
 </li>
-      <li><a href="lda_over_time.models.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.prepare_args">prepare_args() (lda_over_time.models.dtm_model_interface.DtmModelInterface method)</a>
+      <li><a href="dev.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.prepare_args">prepare_args() (lda_over_time.models.dtm_model_interface.DtmModelInterface method)</a>
 
       <ul>
         <li><a href="lda_over_time.models.html#lda_over_time.models.lda_seq_model.LdaSeqModel.prepare_args">(lda_over_time.models.lda_seq_model.LdaSeqModel method)</a>
 </li>
-        <li><a href="lda_over_time.models.html#lda_over_time.models.prevalence_model.PrevalenceModel.prepare_args">(lda_over_time.models.prevalence_model.PrevalenceModel method)</a>
+        <li><a href="lda_over_time.models.html#lda_over_time.models.temporal_lda_model.TemporalLdaModel.prepare_args">(lda_over_time.models.temporal_lda_model.TemporalLdaModel method)</a>
 </li>
       </ul></li>
   </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="lda_over_time.models.html#lda_over_time.models.prevalence_model.PrevalenceModel">PrevalenceModel (class in lda_over_time.models.prevalence_model)</a>
+      <li><a href="lda_over_time.html#lda_over_time.lda_over_time.LdaOverTime.rename_topics">rename_topics() (lda_over_time.lda_over_time.LdaOverTime method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -241,12 +229,14 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="lda_over_time.models.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.train">train() (lda_over_time.models.dtm_model_interface.DtmModelInterface method)</a>
+      <li><a href="lda_over_time.models.html#lda_over_time.models.temporal_lda_model.TemporalLdaModel">TemporalLdaModel (class in lda_over_time.models.temporal_lda_model)</a>
+</li>
+      <li><a href="dev.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.train">train() (lda_over_time.models.dtm_model_interface.DtmModelInterface method)</a>
 
       <ul>
         <li><a href="lda_over_time.models.html#lda_over_time.models.lda_seq_model.LdaSeqModel.train">(lda_over_time.models.lda_seq_model.LdaSeqModel method)</a>
 </li>
-        <li><a href="lda_over_time.models.html#lda_over_time.models.prevalence_model.PrevalenceModel.train">(lda_over_time.models.prevalence_model.PrevalenceModel method)</a>
+        <li><a href="lda_over_time.models.html#lda_over_time.models.temporal_lda_model.TemporalLdaModel.train">(lda_over_time.models.temporal_lda_model.TemporalLdaModel method)</a>
 </li>
       </ul></li>
   </ul></td>

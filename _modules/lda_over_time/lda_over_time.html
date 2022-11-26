@@ -37,7 +37,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">lda_over_time</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">LdaOverTime</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev.html">Developer’s Guide</a></li>
 </ul>
 
         </div>
@@ -75,6 +76,7 @@
 <span class="sd">time slice.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="c1"># IMPORTS</span>
+<span class="kn">import</span> <span class="nn">matplotlib.dates</span> <span class="k">as</span> <span class="nn">mdates</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
@@ -144,13 +146,16 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">topics_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">words</span><span class="p">)</span>
 
+        <span class="c1"># Default name is top 10 words</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rename_topics</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topics_names</span><span class="p">)</span>
+
 
     <span class="k">def</span> <span class="nf">__get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># extract results that will be used to plot model</span>
         <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_results</span><span class="p">()</span>
 
         <span class="c1"># get weights of each topic over time</span>
-        <span class="n">weights</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_topics</span><span class="p">))]</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_topics</span><span class="p">))]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="c1"># get dates</span>
         <span class="n">dates</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">values</span>
@@ -162,11 +167,15 @@
 <div class="viewcode-block" id="LdaOverTime.plot"><a class="viewcode-back" href="../../lda_over_time.html#lda_over_time.lda_over_time.LdaOverTime.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
              <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
              <span class="n">legend_title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-             <span class="n">topic_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
              <span class="n">path_to_save</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-             <span class="n">display</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+             <span class="n">rotation</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">90</span><span class="p">,</span>
+             <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;line&quot;</span><span class="p">,</span>
+             <span class="n">display</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="n">date_format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot the evolution of topics over time.</span>
+
+<span class="sd">        To rename topics&#39; names, use method `rename_topics`.</span>
 
 <span class="sd">        :param title: title of plot</span>
 <span class="sd">        :type title: str</span>
@@ -174,40 +183,72 @@
 <span class="sd">        :param legend_title: legend&#39;s title</span>
 <span class="sd">        :type legend_title: str, optional</span>
 
-<span class="sd">        :param topic_names: custom names for each topic. If not provided, it \</span>
-<span class="sd">        will be the top 10 words for each topic.</span>
-<span class="sd">        :type topic_names: list[str], optional</span>
-
 <span class="sd">        :param path_to_save: set it with path to save the graph. Default \</span>
 <span class="sd">        behaviour does not save the graph.</span>
 <span class="sd">        :type path_to_save: str, optional</span>
+
+<span class="sd">        :param rotation: value in degrees to rotate horizontal labels. Default \</span>
+<span class="sd">        is 90.</span>
+<span class="sd">        :type rotation: int, optional</span>
+
+<span class="sd">        :param mode: type of plotting. It can be either a simple `line` plot \</span>
+<span class="sd">        or `stack` plot. Default is `line`.</span>
+<span class="sd">        :type mode: str, optional</span>
 
 <span class="sd">        :param display: set it to False to not display graph. Default \</span>
 <span class="sd">        behaviour is to display.</span>
 <span class="sd">        :type display: bool, optional</span>
 
+<span class="sd">        :param date_format: date format to be displayed</span>
+<span class="sd">        :type date_format: str, optional</span>
+
 <span class="sd">        :return: Nothing</span>
 <span class="sd">        :rtype: None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Custom topic names were not provided: set default value (top 10 words)</span>
-        <span class="k">if</span> <span class="n">topic_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">topic_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topics_names</span>
+        <span class="c1"># Plot lines</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;line&quot;</span><span class="p">:</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dates</span><span class="p">)))</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">legend_title</span><span class="p">,</span>
+                       <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+                       <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">)</span>
 
-        <span class="c1"># TODO: find a way of setting label names without breaking markers</span>
-        <span class="c1"># Topic names has the right length: set new column names</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">topic_names</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">topic_names</span>
+            <span class="c1"># date_format was not provided: print with self.date_format</span>
+            <span class="k">if</span> <span class="n">date_format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dates</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="n">rotation</span><span class="p">)</span>
 
-        <span class="c1"># Plot</span>
-        <span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)</span>
-        <span class="n">g</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dates</span><span class="p">)))</span>
-        <span class="n">g</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dates</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+            <span class="c1"># date_format was provided: print with custom labels</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span>
+                        <span class="n">labels</span><span class="o">=</span><span class="p">[</span>
+                            <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">date_format</span><span class="p">)</span>
+                                <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dates</span>
+                        <span class="p">],</span>
+                        <span class="n">rotation</span><span class="o">=</span><span class="n">rotation</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Plot stacks</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;stack&quot;</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+            <span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">()</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">stackplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dates</span><span class="p">,</span> <span class="o">*</span><span class="n">y</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+                       <span class="n">title</span><span class="o">=</span><span class="n">legend_title</span><span class="p">,</span>
+                       <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+                       <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="n">rotation</span><span class="p">)</span>
+
+            <span class="c1"># Set custom date format if provided</span>
+            <span class="k">if</span> <span class="n">date_format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="n">date_format</span><span class="p">))</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="n">date_format</span><span class="p">))</span>
+
+        <span class="c1"># Unknown plot</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There is no option `mode = </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
 
         <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
-
-        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">legend_title</span><span class="p">,</span>
-                   <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
-                   <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">)</span>
 
         <span class="c1"># Path was given: save plot in path</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_to_save</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -319,10 +360,49 @@
         <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_results</span><span class="p">()</span>
 
         <span class="c1"># Change columns to number topics from 1 to n_topics</span>
-        <span class="n">results</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_topics</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">{</span>
+                <span class="n">i</span><span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_topics</span><span class="p">)</span>
+            <span class="p">},</span>
+            <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
 
         <span class="c1"># Return table</span>
-        <span class="k">return</span> <span class="n">results</span></div></div>
+        <span class="k">return</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="LdaOverTime.rename_topics"><a class="viewcode-back" href="../../lda_over_time.html#lda_over_time.lda_over_time.LdaOverTime.rename_topics">[docs]</a>    <span class="k">def</span> <span class="nf">rename_topics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rename topic&#39;s names with the list with new names.</span>
+
+<span class="sd">        It will rename based on the given order, that is the first name will \</span>
+<span class="sd">        overwrite the first topic, the second will overwrite second topic, and \</span>
+<span class="sd">        so on.</span>
+
+<span class="sd">        The length should be equal to number of topics, otherwise it will \</span>
+<span class="sd">        raise ValueError.</span>
+
+<span class="sd">        :param new_names: List with new names to overwrite the topics&#39; names</span>
+<span class="sd">        :type new_names: list[str]</span>
+
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        :rtype: None</span>
+
+<span class="sd">        :raises ValueError: when the given list&#39;s length does not match with \</span>
+<span class="sd">        the number of topics.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Raise exception if length does not match with number of topics</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_names</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_topics</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;The given list should have length </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_topics</span><span class="si">}</span><span class="s1">.&#39;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Map older names to new names</span>
+        <span class="n">renaming</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">new_names</span><span class="p">))</span>
+
+        <span class="c1"># Rename weights&#39; columns</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">renaming</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
 
 </pre></div>
 

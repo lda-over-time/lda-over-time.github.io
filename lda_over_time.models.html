@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lda_over_time.models package &mdash; lda-over-time  documentation</title>
+  <title>Models &mdash; lda-over-time  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,7 +19,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="lda_over_time package" href="lda_over_time.html" /> 
+    <link rel="next" title="Developer’s Guide" href="dev.html" />
+    <link rel="prev" title="Core" href="lda_over_time.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -39,19 +40,16 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">lda_over_time</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="lda_over_time.html">lda_over_time package</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="lda_over_time.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">lda_over_time.models package</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="lda_over_time.html#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="lda_over_time.html#module-lda_over_time.lda_over_time">lda_over_time.lda_over_time module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="lda_over_time.html#module-lda_over_time">Module contents</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">LdaOverTime</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lda_over_time.html">Core</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-lda_over_time.models.lda_seq_model">lda_over_time.models.lda_seq_model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-lda_over_time.models.temporal_lda_model">lda_over_time.models.temporal_lda_model</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="dev.html">Developer’s Guide</a></li>
 </ul>
 
         </div>
@@ -68,9 +66,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="modules.html">lda_over_time</a> &raquo;</li>
-          <li><a href="lda_over_time.html">lda_over_time package</a> &raquo;</li>
-      <li>lda_over_time.models package</li>
+          <li><a href="modules.html">LdaOverTime</a> &raquo;</li>
+      <li>Models</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/lda_over_time.models.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -80,124 +77,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="lda-over-time-models-package">
-<h1>lda_over_time.models package<a class="headerlink" href="#lda-over-time-models-package" title="Permalink to this heading"></a></h1>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
-</section>
-<section id="module-lda_over_time.models.dtm_model_interface">
-<span id="lda-over-time-models-dtm-model-interface-module"></span><h2>lda_over_time.models.dtm_model_interface module<a class="headerlink" href="#module-lda_over_time.models.dtm_model_interface" title="Permalink to this heading"></a></h2>
-<p>DtmModelInterface is an interface to create new DTM modules, these modules
-should train the model and return values to front end.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="lda_over_time.models.dtm_model_interface.DtmModelInterface">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lda_over_time.models.dtm_model_interface.</span></span><span class="sig-name descname"><span class="pre">DtmModelInterface</span></span><a class="reference internal" href="_modules/lda_over_time/models/dtm_model_interface.html#DtmModelInterface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.dtm_model_interface.DtmModelInterface" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>DtmModelInterface defines methods and attributes that a module should have     in order to be passed to front end.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>corpus</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – Each item from the list is one document from corpus.</p></li>
-<li><p><strong>dates</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of timestamps for each document in corpus, each     date’s position should match with its respective text.</p></li>
-<li><p><strong>date_format</strong> (<em>str</em>) – The date format used in <cite>dates</cite>.</p></li>
-<li><p><strong>freq</strong> (<em>str</em>) – The frequency used to group texts.</p></li>
-<li><p><strong>n_topics</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of topics that the DTM model should find. The     default value is 100.</p></li>
-<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>optional</em>) – Separator used to split each word, the default value is any     blank space.</p></li>
-<li><p><strong>workers</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of workers (cpus) to use. If not provided, it     will use the value of multiprocessing.cpu_count()</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="lda_over_time.models.dtm_model_interface.DtmModelInterface.get_results">
-<span class="sig-name descname"><span class="pre">get_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/dtm_model_interface.html#DtmModelInterface.get_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.dtm_model_interface.DtmModelInterface.get_results" title="Permalink to this definition"></a></dt>
-<dd><p>This method should return a table representing the evolution of each         topic over time.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>It must return a Pandas’ dataframe where rows represents         different time slices and they are sorted by date, it must have one         column <cite>data</cite> and the remaining columns numbered from 0 to k (number         of topics - 1) that holds weights of each topic in that period.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>pandas.core.frame.DataFrame</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lda_over_time.models.dtm_model_interface.DtmModelInterface.get_topic_words">
-<span class="sig-name descname"><span class="pre">get_topic_words</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topic_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/dtm_model_interface.html#DtmModelInterface.get_topic_words"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.dtm_model_interface.DtmModelInterface.get_topic_words" title="Permalink to this definition"></a></dt>
-<dd><p>This method should return the top n words that better describes the         topic in a specific time slice.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>topic_id</strong> (<em>int</em>) – The id of the desired topic.</p></li>
-<li><p><strong>i</strong> (<em>int</em>) – The position of the desired timeslice in chronological         order the first (oldest) time slice is indexed by 1.</p></li>
-<li><p><strong>n</strong> (<em>int</em>) – This specifies how many words that better describes the         topic at a specific time slice should be returned.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>It returns a list of top n words that best describes the         requested topic in a specific time.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list[str]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="lda_over_time.models.dtm_model_interface.DtmModelInterface.n_timeslices">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_timeslices</span></span><a class="headerlink" href="#lda_over_time.models.dtm_model_interface.DtmModelInterface.n_timeslices" title="Permalink to this definition"></a></dt>
-<dd><p>This attribute should return the number of timeslices found.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>It should return the number of time slices found in corpus.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lda_over_time.models.dtm_model_interface.DtmModelInterface.prepare_args">
-<span class="sig-name descname"><span class="pre">prepare_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/dtm_model_interface.html#DtmModelInterface.prepare_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.dtm_model_interface.DtmModelInterface.prepare_args" title="Permalink to this definition"></a></dt>
-<dd><p>This method should return a dictionary with all necessary values to         call PyLdaVis.prepare method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>i</strong> (<em>int</em>) – The position of the desired timeslice in chronological         order, the first (oldest) time slice is indexed by 1.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>It returns a dictionary ready to be passed to PyLdaVis</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict[str, any]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lda_over_time.models.dtm_model_interface.DtmModelInterface.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/dtm_model_interface.html#DtmModelInterface.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.dtm_model_interface.DtmModelInterface.train" title="Permalink to this definition"></a></dt>
-<dd><p>This method should train the dtm model.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>nothing</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</section>
+  <section id="models">
+<h1>Models<a class="headerlink" href="#models" title="Permalink to this heading"></a></h1>
 <section id="module-lda_over_time.models.lda_seq_model">
-<span id="lda-over-time-models-lda-seq-model-module"></span><h2>lda_over_time.models.lda_seq_model module<a class="headerlink" href="#module-lda_over_time.models.lda_seq_model" title="Permalink to this heading"></a></h2>
+<span id="lda-over-time-models-lda-seq-model"></span><h2>lda_over_time.models.lda_seq_model<a class="headerlink" href="#module-lda_over_time.models.lda_seq_model" title="Permalink to this heading"></a></h2>
 <p>LdaSeqModel brings the Gensim’s LdaSeqModel functionalities to our library.</p>
 <p>Its main advantage over other models is that it can detect changes in the vocabulary used to describe each topic over time, making it more precise in classifying each topic. But it is slower to run.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="lda_over_time.models.lda_seq_model.LdaSeqModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lda_over_time.models.lda_seq_model.</span></span><span class="sig-name descname"><span class="pre">LdaSeqModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corpus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_topics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/lda_seq_model.html#LdaSeqModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.lda_seq_model.LdaSeqModel" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#lda_over_time.models.dtm_model_interface.DtmModelInterface" title="lda_over_time.models.dtm_model_interface.DtmModelInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">DtmModelInterface</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="dev.html#lda_over_time.models.dtm_model_interface.DtmModelInterface" title="lda_over_time.models.dtm_model_interface.DtmModelInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">DtmModelInterface</span></code></a></p>
 <p>LdaSeqModel is a model that uses the Gensim’s LdaSeqModel, which     supports the variance along time of the way that a certain topic is     approached (it can detect better the change of vocabulary to speak a     certain topic).</p>
 <p>With this feature, it may be more precise than PrevalenceModel, but     it is slower.</p>
 <dl class="field-list simple">
@@ -299,15 +188,15 @@ should train the model and return values to front end.</p>
 </dd></dl>
 
 </section>
-<section id="module-lda_over_time.models.prevalence_model">
-<span id="lda-over-time-models-prevalence-model-module"></span><h2>lda_over_time.models.prevalence_model module<a class="headerlink" href="#module-lda_over_time.models.prevalence_model" title="Permalink to this heading"></a></h2>
-<p>PrevalenceModel is a simpler and faster temporal LDA that returns the proportion of main topics in each time slice.</p>
+<section id="module-lda_over_time.models.temporal_lda_model">
+<span id="lda-over-time-models-temporal-lda-model"></span><h2>lda_over_time.models.temporal_lda_model<a class="headerlink" href="#module-lda_over_time.models.temporal_lda_model" title="Permalink to this heading"></a></h2>
+<p>TemporalLdaModel is a simpler and faster temporal LDA that returns the proportion of main topics in each time slice.</p>
 <p>Its main advantage over other models is that it is fast. But it may not handle well the variation of the way that a topic is presented (when vocabulary to describe the topic varies over the given dataset).</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="lda_over_time.models.prevalence_model.PrevalenceModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lda_over_time.models.prevalence_model.</span></span><span class="sig-name descname"><span class="pre">PrevalenceModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corpus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_topics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/prevalence_model.html#PrevalenceModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.prevalence_model.PrevalenceModel" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#lda_over_time.models.dtm_model_interface.DtmModelInterface" title="lda_over_time.models.dtm_model_interface.DtmModelInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">DtmModelInterface</span></code></a></p>
-<p>PrevalenceModel is a simple temporal LDA model, it is faster, but     it may not handle well the evolution of topics (because the vocabulary     used in a certain topic may vary over time).</p>
+<dt class="sig sig-object py" id="lda_over_time.models.temporal_lda_model.TemporalLdaModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lda_over_time.models.temporal_lda_model.</span></span><span class="sig-name descname"><span class="pre">TemporalLdaModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corpus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_topics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggregator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'average'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/temporal_lda_model.html#TemporalLdaModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.temporal_lda_model.TemporalLdaModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="dev.html#lda_over_time.models.dtm_model_interface.DtmModelInterface" title="lda_over_time.models.dtm_model_interface.DtmModelInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">DtmModelInterface</span></code></a></p>
+<p>TemporalLdaModel is a simple temporal LDA model, it is faster, but     it may not handle well the evolution of topics (because the vocabulary     used in a certain topic may vary over time).</p>
 <p>:param corpus:Each item from the list is one document from corpus.
 :type corpus: list[str]</p>
 <dl class="field-list simple">
@@ -319,6 +208,7 @@ should train the model and return values to front end.</p>
 <li><p><strong>n_topics</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of topics that the DTM model should find. The     default value is 100.</p></li>
 <li><p><strong>sep</strong> (<em>str</em><em>, </em><em>optional</em>) – Separator used to split each word, the default value is any     blank space.</p></li>
 <li><p><strong>workers</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of workers (cpus) to use. If not provided, it will     use the total number of threads on running machine.</p></li>
+<li><p><strong>aggregator</strong> (<em>str</em><em>, </em><em>optional</em>) – Specifies how to aggregate all documents in time slice     and calculate its proportions. It can be either <cite>average</cite> to calculate the     average of topic’s weights for each time slice or the proportion of <cite>main</cite>     topics in each time slice. Default is <cite>average</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -329,8 +219,8 @@ should train the model and return values to front end.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="lda_over_time.models.prevalence_model.PrevalenceModel.get_results">
-<span class="sig-name descname"><span class="pre">get_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/prevalence_model.html#PrevalenceModel.get_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.prevalence_model.PrevalenceModel.get_results" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="lda_over_time.models.temporal_lda_model.TemporalLdaModel.get_results">
+<span class="sig-name descname"><span class="pre">get_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/temporal_lda_model.html#TemporalLdaModel.get_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.temporal_lda_model.TemporalLdaModel.get_results" title="Permalink to this definition"></a></dt>
 <dd><p>This method should return a table representing the evolution of each         topic over time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -343,8 +233,8 @@ should train the model and return values to front end.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="lda_over_time.models.prevalence_model.PrevalenceModel.get_topic_words">
-<span class="sig-name descname"><span class="pre">get_topic_words</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topic_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/prevalence_model.html#PrevalenceModel.get_topic_words"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.prevalence_model.PrevalenceModel.get_topic_words" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="lda_over_time.models.temporal_lda_model.TemporalLdaModel.get_topic_words">
+<span class="sig-name descname"><span class="pre">get_topic_words</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topic_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/temporal_lda_model.html#TemporalLdaModel.get_topic_words"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.temporal_lda_model.TemporalLdaModel.get_topic_words" title="Permalink to this definition"></a></dt>
 <dd><p>This method should return the top n words that better describes the         topic in a specific time slice.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -367,8 +257,8 @@ should train the model and return values to front end.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="lda_over_time.models.prevalence_model.PrevalenceModel.n_timeslices">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_timeslices</span></span><a class="headerlink" href="#lda_over_time.models.prevalence_model.PrevalenceModel.n_timeslices" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="lda_over_time.models.temporal_lda_model.TemporalLdaModel.n_timeslices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_timeslices</span></span><a class="headerlink" href="#lda_over_time.models.temporal_lda_model.TemporalLdaModel.n_timeslices" title="Permalink to this definition"></a></dt>
 <dd><p>This attribute should be the number of timeslices found during         training.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -378,8 +268,8 @@ should train the model and return values to front end.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="lda_over_time.models.prevalence_model.PrevalenceModel.prepare_args">
-<span class="sig-name descname"><span class="pre">prepare_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/prevalence_model.html#PrevalenceModel.prepare_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.prevalence_model.PrevalenceModel.prepare_args" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="lda_over_time.models.temporal_lda_model.TemporalLdaModel.prepare_args">
+<span class="sig-name descname"><span class="pre">prepare_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/temporal_lda_model.html#TemporalLdaModel.prepare_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.temporal_lda_model.TemporalLdaModel.prepare_args" title="Permalink to this definition"></a></dt>
 <dd><p>This method should return a dictionary with all necessary values to         call PyLdaVis.prepare method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -395,8 +285,8 @@ should train the model and return values to front end.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="lda_over_time.models.prevalence_model.PrevalenceModel.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/prevalence_model.html#PrevalenceModel.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.prevalence_model.PrevalenceModel.train" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="lda_over_time.models.temporal_lda_model.TemporalLdaModel.train">
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lda_over_time/models/temporal_lda_model.html#TemporalLdaModel.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lda_over_time.models.temporal_lda_model.TemporalLdaModel.train" title="Permalink to this definition"></a></dt>
 <dd><p>This method trains the dtm model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -411,16 +301,14 @@ should train the model and return values to front end.</p>
 </dd></dl>
 
 </section>
-<section id="module-lda_over_time.models">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-lda_over_time.models" title="Permalink to this heading"></a></h2>
-</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="lda_over_time.html" class="btn btn-neutral float-left" title="lda_over_time package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lda_over_time.html" class="btn btn-neutral float-left" title="Core" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dev.html" class="btn btn-neutral float-right" title="Developer’s Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

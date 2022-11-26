@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lda_over_time.models.temporal_lda_model &mdash; lda-over-time  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> lda-over-time
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">LdaOverTime</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev.html">Developer’s Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lda-over-time</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>lda_over_time.models.temporal_lda_model</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for lda_over_time.models.temporal_lda_model</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">TemporalLdaModel is a simpler and faster temporal LDA that returns the \</span>
+<span class="sd">proportion of main topics in each time slice.</span>
+
+<span class="sd">Its main advantage over other models is that it is fast. But it may not handle \</span>
+<span class="sd">well the variation of the way that a topic is presented (when vocabulary to \</span>
+<span class="sd">describe the topic varies over the given dataset).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># IMPORTS</span>
+<span class="kn">from</span> <span class="nn">gensim.corpora.dictionary</span> <span class="kn">import</span> <span class="n">Dictionary</span>
+<span class="kn">from</span> <span class="nn">gensim.models.ldamulticore</span> <span class="kn">import</span> <span class="n">LdaMulticore</span>
+<span class="kn">from</span> <span class="nn">lda_over_time.models.dtm_model_interface</span> <span class="kn">import</span> <span class="n">DtmModelInterface</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">cpu_count</span>
+<span class="kn">from</span> <span class="nn">pyLDAvis.gensim_models</span> <span class="kn">import</span> <span class="n">_extract_data</span> <span class="k">as</span> <span class="n">extract_data</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<span class="c1"># TYPING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+
+<div class="viewcode-block" id="TemporalLdaModel"><a class="viewcode-back" href="../../../lda_over_time.models.html#lda_over_time.models.temporal_lda_model.TemporalLdaModel">[docs]</a><span class="k">class</span> <span class="nc">TemporalLdaModel</span><span class="p">(</span><span class="n">DtmModelInterface</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TemporalLdaModel is a simple temporal LDA model, it is faster, but \</span>
+<span class="sd">    it may not handle well the evolution of topics (because the vocabulary \</span>
+<span class="sd">    used in a certain topic may vary over time).</span>
+
+<span class="sd">    :param corpus:Each item from the list is one document from corpus.</span>
+<span class="sd">    :type corpus: list[str]</span>
+
+<span class="sd">    :param dates: List of timestamps for each document in corpus, each date&#39;s \</span>
+<span class="sd">    position should match with its respective text.</span>
+<span class="sd">    :type dates: list[str]</span>
+
+<span class="sd">    :param date_format: The date format used in `dates`, e.g. &quot;%Y/%m/%d&quot; for \</span>
+<span class="sd">    &quot;YYYY/MM/DD&quot; format. More info at `documentation`_.</span>
+<span class="sd">    :type date_format: str</span>
+
+<span class="sd">    :param freq: The frequency used to group texts, e.g. &quot;1M15D&quot; for a \</span>
+<span class="sd">    frequency of a month and 15 days. Useful notations: \</span>
+<span class="sd">    day = &quot;D&quot;\</span>
+<span class="sd">    month = &quot;M&quot;; \</span>
+<span class="sd">    year = &quot;Y&quot;. \</span>
+<span class="sd">    More info at `pandas`_</span>
+<span class="sd">    :type freq: str</span>
+
+<span class="sd">    :param n_topics: Number of topics that the DTM model should find. The \</span>
+<span class="sd">    default value is 100.</span>
+<span class="sd">    :type n_topics: int, optional</span>
+
+<span class="sd">    :param sep: Separator used to split each word, the default value is any \</span>
+<span class="sd">    blank space.</span>
+<span class="sd">    :type sep: str, optional</span>
+
+<span class="sd">    :param workers: Number of workers (cpus) to use. If not provided, it will \</span>
+<span class="sd">    use the total number of threads on running machine.</span>
+<span class="sd">    :type workers: int, optional</span>
+
+<span class="sd">    :param aggregator: Specifies how to aggregate all documents in time slice \</span>
+<span class="sd">    and calculate its proportions. It can be either `average` to calculate the \</span>
+<span class="sd">    average of topic&#39;s weights for each time slice or the proportion of `main` \</span>
+<span class="sd">    topics in each time slice. Default is `average`.</span>
+<span class="sd">    :type aggregator: str, optional</span>
+
+<span class="sd">    :return: Nothing</span>
+<span class="sd">    :rtype: None</span>
+
+<span class="sd">    .. _documentation: https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes</span>
+<span class="sd">    .. _pandas: https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">corpus</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">dates</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">date_format</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">freq</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">n_topics</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+                 <span class="n">sep</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">workers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">aggregator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;average&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        I initialize the variables to train model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Save arguments inside object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corpus</span> <span class="o">=</span> <span class="n">corpus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dates</span> <span class="o">=</span> <span class="n">dates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_format</span> <span class="o">=</span> <span class="n">date_format</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">freq</span> <span class="o">=</span> <span class="n">freq</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_topics</span> <span class="o">=</span> <span class="n">n_topics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sep</span> <span class="o">=</span> <span class="n">sep</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aggregator</span> <span class="o">=</span> <span class="n">aggregator</span>
+
+        <span class="c1"># get number of parallel workers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">workers</span> <span class="o">=</span> <span class="n">workers</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">workers</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="n">cpu_count</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">__normalize_lda_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">corpus</span><span class="p">,</span> <span class="n">lda_model</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method creates the dataframe from the result of lda training and \</span>
+<span class="sd">        normalizes the weights (sum of weights for a topic = 1.0)</span>
+
+<span class="sd">        :param corpus: List of Gensim&#39;s BoWs, where each BoW represents one \</span>
+<span class="sd">        text from corpus.</span>
+<span class="sd">        :type corpus: list[BoW]</span>
+
+<span class="sd">        :param lda_model: Trained lda model</span>
+<span class="sd">        :type lda_model: gensim.models.ldamulticore.LdaMulticore</span>
+
+<span class="sd">        :return: Table of normalized results of Lda model.</span>
+<span class="sd">        :rtype: pd.core.frame.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create stream of weights for each document in corpus</span>
+        <span class="n">stream</span> <span class="o">=</span> <span class="n">lda_model</span><span class="o">.</span><span class="n">get_document_topics</span><span class="p">(</span><span class="n">corpus</span><span class="p">)</span>
+
+        <span class="c1"># Get weights</span>
+        <span class="n">lda_weights</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">stream</span><span class="p">))</span>
+
+        <span class="c1"># Normalize weights</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">lda_weights</span><span class="o">.</span><span class="n">T</span> <span class="o">/</span> <span class="n">lda_weights</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+
+
+    <span class="k">def</span> <span class="nf">__prepare_corpus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">corpus</span><span class="p">,</span> <span class="n">sep</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method takes a list of document&#39;s string and convert them to \</span>
+<span class="sd">        correct object typing asked by Gensim&#39;s LdaMulticore.</span>
+
+<span class="sd">        :param corpus: List of documents&#39; texts</span>
+<span class="sd">        :type corpus: list[str]</span>
+
+<span class="sd">        :param sep: Character that separates each word. If not given, all \</span>
+<span class="sd">        whitespaces are considered separators.</span>
+<span class="sd">        :type sep: str, optional</span>
+
+<span class="sd">        :return: Pair of Gensim&#39;s Dictionary instance and list of list of \</span>
+<span class="sd">        Gensim&#39;s BoW from corpus</span>
+<span class="sd">        :rtype: tuple[gensim.corpora.Dictionary, list[BoW]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Split words for each document</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">sep</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">corpus</span><span class="p">]</span>
+
+        <span class="c1"># Train Dictionary</span>
+        <span class="n">dictionary</span> <span class="o">=</span> <span class="n">Dictionary</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># Convert corpus to list of BoWs</span>
+        <span class="n">corpus_bow</span> <span class="o">=</span> <span class="p">[</span><span class="n">dictionary</span><span class="o">.</span><span class="n">doc2bow</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+
+        <span class="c1"># Return dictionary and list of BoWs</span>
+        <span class="k">return</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">corpus_bow</span>
+
+
+    <span class="k">def</span> <span class="nf">__extract_main_topics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                              <span class="n">dates</span><span class="p">,</span>
+                              <span class="n">date_format</span><span class="p">,</span>
+                              <span class="n">normalized_model</span><span class="p">,</span>
+                              <span class="n">n_topics</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method prepares the model to make a prevalence analysis over the \</span>
+<span class="sd">        lda model. For this, it will create a table with two columns: one for \</span>
+<span class="sd">        the date and other for the main topic of each document.</span>
+
+<span class="sd">        :param dates: List of timestamps for each document in corpus, each \</span>
+<span class="sd">        date&#39;s position should match with its respective text.</span>
+<span class="sd">        :type dates: list[str]</span>
+
+<span class="sd">        :param date_format:The date format used in `dates`.</span>
+<span class="sd">        :type date_format: str</span>
+
+<span class="sd">        :param normalized_model: Normalized result from lda model over corpus.</span>
+<span class="sd">        :type: pd.core.frame.DataFrame</span>
+
+<span class="sd">        :return: Table with date and main topic columns and each row \</span>
+<span class="sd">        represents a document from corpus.</span>
+<span class="sd">        :rtype: pd.core.frame.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># load dates with pandas with given format</span>
+        <span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">date_format</span><span class="p">)</span>
+
+        <span class="c1"># get the main topic for each document</span>
+        <span class="n">main_topics</span> <span class="o">=</span> <span class="n">normalized_model</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_topics</span><span class="p">))]</span><span class="o">.</span><span class="n">idxmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># join dates to main topics</span>
+        <span class="n">zipped</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">dates</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">main_topics</span><span class="p">))</span>
+
+        <span class="c1"># create table with date and topic</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">zipped</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;main_topic&#39;</span><span class="p">])</span>
+
+
+    <span class="k">def</span> <span class="nf">__prepare_pyldavis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dates</span><span class="p">,</span> <span class="n">date_format</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method creates the list of periods found in corpus.</span>
+
+<span class="sd">        :param dates: List of timestamps for each document in corpus, each date&#39;s \</span>
+<span class="sd">        position should match with its respective text.</span>
+<span class="sd">        :type dates: list[str]</span>
+
+<span class="sd">        :param date_format:The date format used in `dates`.</span>
+<span class="sd">        :type date_format: str</span>
+
+<span class="sd">        :param freq:The frequency used to group texts.</span>
+<span class="sd">        :type freq: str</span>
+
+<span class="sd">        :return: translation of id to date and corpus grouped by timestamp</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: improve this part...</span>
+        <span class="c1"># load dates with pandas with given format</span>
+        <span class="n">timestamps</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">date_format</span><span class="p">)</span>
+
+        <span class="c1"># create dataframe of dates</span>
+        <span class="n">timestamps_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">timestamps</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
+
+        <span class="c1"># group dates by timeslice of lenght period</span>
+        <span class="n">dates_by_period</span> <span class="o">=</span> <span class="n">timestamps_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span>
+                <span class="n">pd</span><span class="o">.</span><span class="n">Grouper</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">freq</span><span class="p">),</span>
+                <span class="n">sort</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="c1"># get timestamps used to group</span>
+        <span class="n">timestamp_keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">dates_by_period</span><span class="o">.</span><span class="n">groups</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+        <span class="c1"># initialize variables that hold translation of id to period and</span>
+        <span class="c1"># group corpus by period</span>
+        <span class="n">id_to_period</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">corpus_by_period</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># for each period: enumerate it and extract docs that belongs to this period</span>
+        <span class="k">for</span> <span class="n">_id</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">timestamp_keys</span><span class="p">):</span>
+
+            <span class="c1"># enumerate pediod</span>
+            <span class="n">id_to_period</span><span class="p">[</span><span class="n">_id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+
+            <span class="c1"># get documents that belongs to this period</span>
+            <span class="n">indexes</span> <span class="o">=</span> <span class="n">dates_by_period</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
+
+            <span class="c1"># track documents of this period</span>
+            <span class="n">corpus_by_period</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">idx</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bow</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
+                <span class="n">indexes</span>
+            <span class="p">))</span>
+
+        <span class="c1"># return values</span>
+        <span class="k">return</span> <span class="n">id_to_period</span><span class="p">,</span> <span class="n">corpus_by_period</span>
+
+
+    <span class="k">def</span> <span class="nf">__train_lda_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">corpus</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">n_topics</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method trains the lda model.</span>
+
+<span class="sd">        :param corpus: List of Gensim&#39;s BoWs, where each BoW represents one \</span>
+<span class="sd">        text from corpus.</span>
+<span class="sd">        :type corpus: list[BoW]</span>
+
+<span class="sd">        :param dictionary: Dictionary with convertion id &lt;-&gt; word.</span>
+<span class="sd">        :type dictionary: gensim.corpora.dictionary.Dictionary</span>
+
+<span class="sd">        :param n_topics: Number of topics that the DTM model should find. \</span>
+<span class="sd">        The default value is 100.</span>
+<span class="sd">        :type n_topics: int, optional</span>
+
+<span class="sd">        :return: It returns the trained Gensim&#39;s model LdaMulticore.</span>
+<span class="sd">        :rtype: gensim.models.ldamulticore.LdaMulticore</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">LdaMulticore</span><span class="p">(</span><span class="n">corpus</span><span class="o">=</span><span class="n">corpus</span><span class="p">,</span>
+                            <span class="n">id2word</span><span class="o">=</span><span class="n">dictionary</span><span class="p">,</span>
+                            <span class="n">num_topics</span><span class="o">=</span><span class="n">n_topics</span><span class="p">,</span>
+                            <span class="n">random_state</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                            <span class="n">chunksize</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                            <span class="n">passes</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                            <span class="n">minimum_probability</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                            <span class="n">per_word_topics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="n">workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">workers</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__train_prevalence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                           <span class="n">docs_date_main_topic</span><span class="p">,</span>
+                           <span class="n">freq</span><span class="p">,</span>
+                           <span class="n">grouped_by_period</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method takes the result of LDA and calculates the model of \</span>
+<span class="sd">        temporal LDA with prevalence (frequency of main topics in a period).</span>
+
+<span class="sd">        :param docs_date_main_topic: Table of documents with their date and \</span>
+<span class="sd">        main topic</span>
+<span class="sd">        :type docs_date_main_topic: pd.core.frame.DataFrame</span>
+
+<span class="sd">        :param freq: Frequency to group documents</span>
+<span class="sd">        :type freq: str</span>
+
+<span class="sd">        :param grouped_by_period: Documents grouped by frequency</span>
+<span class="sd">        :type grouped_by_period: pd.core.groupby.DataFrameGroupBy</span>
+
+<span class="sd">        :return: It returns the temporal LDA trained model.</span>
+<span class="sd">        :rtype: pd.core.frame.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Calculate number of posts per period</span>
+        <span class="n">posts_per_period</span> <span class="o">=</span> <span class="n">grouped_by_period</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;count&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Group by period and topic</span>
+        <span class="n">grouped_by_period_topic</span> <span class="o">=</span> <span class="n">docs_date_main_topic</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">pd</span><span class="o">.</span><span class="n">Grouper</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">freq</span><span class="p">),</span>
+                <span class="n">pd</span><span class="o">.</span><span class="n">Grouper</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;main_topic&#39;</span><span class="p">)</span>
+            <span class="p">],</span>
+            <span class="n">sort</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Calculate frequency of each main topic in a time interval period</span>
+        <span class="n">frequency</span> <span class="o">=</span> <span class="n">grouped_by_period_topic</span><span class="o">.</span> \
+                        <span class="n">size</span><span class="p">()</span><span class="o">.</span> \
+                        <span class="n">reset_index</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;count&#39;</span><span class="p">)</span><span class="o">.</span> \
+                        <span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span>
+                              <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;main_topic&#39;</span><span class="p">,</span>
+                              <span class="n">values</span><span class="o">=</span><span class="s1">&#39;count&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+
+        <span class="c1"># Replace nan with zero</span>
+        <span class="n">frequency</span> <span class="o">=</span> <span class="n">frequency</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+
+        <span class="c1"># Create table of prevalence</span>
+        <span class="n">prevalence</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">frequency</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_topics</span><span class="p">))]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">T</span> <span class="o">/</span> \
+                                      <span class="n">posts_per_period</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Add column with dates</span>
+        <span class="n">prevalence</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">frequency</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="c1"># Return temporal lda model</span>
+        <span class="k">return</span> <span class="n">prevalence</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_timeslices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This attribute should be the number of timeslices found during \</span>
+<span class="sd">        training.</span>
+
+<span class="sd">        :return: It should return the number of time slices found in corpus. \</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id_to_timestamp</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TemporalLdaModel.get_results"><a class="viewcode-back" href="../../../lda_over_time.models.html#lda_over_time.models.temporal_lda_model.TemporalLdaModel.get_results">[docs]</a>    <span class="k">def</span> <span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method should return a table representing the evolution of each \</span>
+<span class="sd">        topic over time.</span>
+
+<span class="sd">        :return: Returns a Pandas&#39; dataframe where each column represents a \</span>
+<span class="sd">        timeslice and must have a `date` and columns representing each \</span>
+<span class="sd">        topics weight in that period.</span>
+<span class="sd">        :rtype: pd.core.frame.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal_lda_model</span></div>
+
+
+<div class="viewcode-block" id="TemporalLdaModel.get_topic_words"><a class="viewcode-back" href="../../../lda_over_time.models.html#lda_over_time.models.temporal_lda_model.TemporalLdaModel.get_topic_words">[docs]</a>    <span class="k">def</span> <span class="nf">get_topic_words</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topic_id</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method should return the top n words that better describes the \</span>
+<span class="sd">        topic in a specific time slice.</span>
+
+<span class="sd">        :param topic_id: The id of the desired topic.</span>
+<span class="sd">        :type topic_id: int</span>
+
+<span class="sd">        :param i: The position of the desired timeslice in chronological \</span>
+<span class="sd">        order, the first (oldest) time slice is indexed by 1.</span>
+<span class="sd">        :type i: int</span>
+
+<span class="sd">        :param n:This specifies how many words that better describes the topic \</span>
+<span class="sd">        at a specific time slice should be returned.</span>
+<span class="sd">        :type n: int</span>
+
+<span class="sd">        :return: It returns a list of top n words that best describes the \</span>
+<span class="sd">        requested topic in a specific time.</span>
+<span class="sd">        :rtype: list[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">word</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lda_model</span><span class="o">.</span><span class="n">get_topic_terms</span><span class="p">(</span>
+                        <span class="n">topic_id</span><span class="p">,</span>
+                        <span class="n">n</span>
+                <span class="p">)</span>
+        <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="TemporalLdaModel.prepare_args"><a class="viewcode-back" href="../../../lda_over_time.models.html#lda_over_time.models.temporal_lda_model.TemporalLdaModel.prepare_args">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method should return a dictionary with all necessary values to \</span>
+<span class="sd">        call PyLdaVis.prepare method.</span>
+
+<span class="sd">        :param i: The position of the desired timeslice in chronological \</span>
+<span class="sd">        order, the first (oldest) time slice is indexed by 1.</span>
+<span class="sd">        :type i: int</span>
+
+<span class="sd">        :return: It returns a dictionary ready to be passed to PyLdaVis</span>
+<span class="sd">        :rtype: dict[str, any]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># get timestamp</span>
+        <span class="n">period</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_to_timestamp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="c1"># return prepared data</span>
+        <span class="k">return</span> <span class="n">extract_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lda_model</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">timestamp_to_corpus</span><span class="p">[</span><span class="n">period</span><span class="p">],</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TemporalLdaModel.train"><a class="viewcode-back" href="../../../lda_over_time.models.html#lda_over_time.models.temporal_lda_model.TemporalLdaModel.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method trains the dtm model.</span>
+
+<span class="sd">        :return: Nothing.</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get dictionary and convert corpus to correct type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__prepare_corpus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corpus</span><span class="p">,</span>
+                                                          <span class="bp">self</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
+
+        <span class="c1"># train lda model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lda_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__train_lda_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bow</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">n_topics</span><span class="p">)</span>
+
+        <span class="c1"># get normalized results of lda model from corpus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalized</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__normalize_lda_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bow</span><span class="p">,</span>
+                                                     <span class="bp">self</span><span class="o">.</span><span class="n">lda_model</span><span class="p">)</span>
+
+        <span class="c1"># aggregate is `average`: calculate average</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregator</span> <span class="o">==</span> <span class="s1">&#39;average&#39;</span><span class="p">:</span>
+
+            <span class="c1"># add dates to normalized data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">normalized</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dates</span><span class="p">,</span>
+                    <span class="nb">format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">date_format</span>
+            <span class="p">)</span>
+
+            <span class="c1"># group by frequency and calculate average</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">temporal_lda_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalized</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Grouper</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">freq</span><span class="p">)],</span>
+                    <span class="n">sort</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+
+        <span class="c1"># aggregator is `main`: calculate proportion of main topics</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregator</span> <span class="o">==</span> <span class="s1">&#39;main&#39;</span><span class="p">:</span>
+
+            <span class="c1"># prepare model to prevalence analysis</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">docs_date_main_topic</span> <span class="o">=</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__extract_main_topics</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dates</span><span class="p">,</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">date_format</span><span class="p">,</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">normalized</span><span class="p">,</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">n_topics</span><span class="p">)</span>
+            <span class="c1"># group documents by date</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">grouped_by_frequency</span> <span class="o">=</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">docs_date_main_topic</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Grouper</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span>
+                                                                 <span class="n">freq</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">freq</span><span class="p">),</span>
+                                                      <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># calculate temporal lda model</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">temporal_lda_model</span> <span class="o">=</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__train_prevalence</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">docs_date_main_topic</span><span class="p">,</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">freq</span><span class="p">,</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">grouped_by_frequency</span><span class="p">)</span>
+
+        <span class="c1"># unknown option: raise error</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Option </span><span class="se">\&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">aggregator</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2"> does not exist. &quot;</span>
+                    <span class="s2">&quot;Valid options are &#39;average&#39; and &#39;main&#39;&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># get the list of timestamps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id_to_timestamp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestamp_to_corpus</span> <span class="o">=</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">__prepare_pyldavis</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dates</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_format</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">freq</span><span class="p">)</span></div></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Willian Takayuki Ozako.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

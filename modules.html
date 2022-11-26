@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lda_over_time &mdash; lda-over-time  documentation</title>
+  <title>LdaOverTime &mdash; lda-over-time  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,8 +19,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="lda_over_time package" href="lda_over_time.html" />
-    <link rel="prev" title="Welcome to lda-over-time’s documentation!" href="index.html" /> 
+    <link rel="next" title="Core" href="lda_over_time.html" />
+    <link rel="prev" title="Welcome to LdaOverTime’s documentation!" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,10 +40,12 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">lda_over_time</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="lda_over_time.html">lda_over_time package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">LdaOverTime</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lda_over_time.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lda_over_time.models.html">Models</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="dev.html">Developer’s Guide</a></li>
 </ul>
 
         </div>
@@ -60,7 +62,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>lda_over_time</li>
+      <li>LdaOverTime</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -70,25 +72,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="lda-over-time">
-<h1>lda_over_time<a class="headerlink" href="#lda-over-time" title="Permalink to this heading"></a></h1>
+  <section id="ldaovertime">
+<h1>LdaOverTime<a class="headerlink" href="#ldaovertime" title="Permalink to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="lda_over_time.html">lda_over_time package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="lda_over_time.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="lda_over_time.models.html">lda_over_time.models package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="lda_over_time.models.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="lda_over_time.models.html#module-lda_over_time.models.dtm_model_interface">lda_over_time.models.dtm_model_interface module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="lda_over_time.models.html#module-lda_over_time.models.lda_seq_model">lda_over_time.models.lda_seq_model module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="lda_over_time.models.html#module-lda_over_time.models.prevalence_model">lda_over_time.models.prevalence_model module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="lda_over_time.models.html#module-lda_over_time.models">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lda_over_time.html">Core</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lda_over_time.html#module-lda_over_time.lda_over_time">lda_over_time.lda_over_time</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="lda_over_time.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lda_over_time.html#module-lda_over_time.lda_over_time">lda_over_time.lda_over_time module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lda_over_time.html#module-lda_over_time">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lda_over_time.models.html">Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lda_over_time.models.html#module-lda_over_time.models.lda_seq_model">lda_over_time.models.lda_seq_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lda_over_time.models.html#module-lda_over_time.models.temporal_lda_model">lda_over_time.models.temporal_lda_model</a></li>
 </ul>
 </li>
 </ul>
@@ -99,8 +93,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to lda-over-time’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="lda_over_time.html" class="btn btn-neutral float-right" title="lda_over_time package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to LdaOverTime’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lda_over_time.html" class="btn btn-neutral float-right" title="Core" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

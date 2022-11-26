@@ -37,7 +37,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">lda_over_time</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">LdaOverTime</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev.html">Developer’s Guide</a></li>
 </ul>
 
         </div>
@@ -70,7 +71,7 @@
 <span class="sd">should train the model and return values to front end.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="DtmModelInterface"><a class="viewcode-back" href="../../../lda_over_time.models.html#lda_over_time.models.dtm_model_interface.DtmModelInterface">[docs]</a><span class="k">class</span> <span class="nc">DtmModelInterface</span><span class="p">:</span>
+<div class="viewcode-block" id="DtmModelInterface"><a class="viewcode-back" href="../../../dev.html#lda_over_time.models.dtm_model_interface.DtmModelInterface">[docs]</a><span class="k">class</span> <span class="nc">DtmModelInterface</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    DtmModelInterface defines methods and attributes that a module should have \</span>
 <span class="sd">    in order to be passed to front end.</span>
@@ -114,7 +115,7 @@
         <span class="k">pass</span>
 
 
-<div class="viewcode-block" id="DtmModelInterface.get_results"><a class="viewcode-back" href="../../../lda_over_time.models.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.get_results">[docs]</a>    <span class="k">def</span> <span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DtmModelInterface.get_results"><a class="viewcode-back" href="../../../dev.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.get_results">[docs]</a>    <span class="k">def</span> <span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method should return a table representing the evolution of each \</span>
 <span class="sd">        topic over time.</span>
@@ -129,7 +130,7 @@
         <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="DtmModelInterface.get_topic_words"><a class="viewcode-back" href="../../../lda_over_time.models.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.get_topic_words">[docs]</a>    <span class="k">def</span> <span class="nf">get_topic_words</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topic_id</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+<div class="viewcode-block" id="DtmModelInterface.get_topic_words"><a class="viewcode-back" href="../../../dev.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.get_topic_words">[docs]</a>    <span class="k">def</span> <span class="nf">get_topic_words</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topic_id</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method should return the top n words that better describes the \</span>
 <span class="sd">        topic in a specific time slice.</span>
@@ -153,7 +154,7 @@
         <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="DtmModelInterface.prepare_args"><a class="viewcode-back" href="../../../lda_over_time.models.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.prepare_args">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<div class="viewcode-block" id="DtmModelInterface.prepare_args"><a class="viewcode-back" href="../../../dev.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.prepare_args">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method should return a dictionary with all necessary values to \</span>
 <span class="sd">        call PyLdaVis.prepare method.</span>
@@ -169,7 +170,7 @@
         <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="DtmModelInterface.train"><a class="viewcode-back" href="../../../lda_over_time.models.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DtmModelInterface.train"><a class="viewcode-back" href="../../../dev.html#lda_over_time.models.dtm_model_interface.DtmModelInterface.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method should train the dtm model.</span>
 
